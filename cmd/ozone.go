@@ -39,7 +39,7 @@ func (oc *OzoneChecker) getPrice(doc *goquery.Document) float64 {
 }
 
 func (oc *OzoneChecker) Check(url string) (CheckResponse, error) {
-	response := CheckResponse{}
+	response := CheckResponse{URL: url}
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
