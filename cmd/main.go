@@ -24,7 +24,7 @@ type Event struct {
 	OzoneItems []string `json:"ozoneItems"`
 }
 
-func HandleRequest(ctx *context.Context, event *Event) {
+func HandleRequest(ctx context.Context, event Event) {
 	oc := NewOzoneChecker()
 	resChan := make(chan CheckResponse, 10)
 

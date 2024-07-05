@@ -18,7 +18,7 @@ func (oc *OzoneChecker) isItemAvailable(doc *goquery.Document) bool {
 }
 
 func (oc *OzoneChecker) getPrice(doc *goquery.Document) float64 {
-	priceNode := doc.Find(".product-options .price")
+	priceNode := doc.Find(".product-options [id^='product-price-']")
 	if priceNode.Length() == 0 {
 		return 0
 	}
