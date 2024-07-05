@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -19,22 +20,21 @@ type CheckResponse struct {
 
 var SNS_TOPIC_ARN = os.Getenv("AWS_SNS_TOPIC_ARN")
 
-func HandleRequest() {
+type Event struct {
+	OzoneItems []string `json:"ozoneItems"`
+}
+
+func HandleRequest(ctx *context.Context, event *Event) {
 	oc := NewOzoneChecker()
-
-	ozoneItems := []string{
-		"https://www.ozone.bg/product/monitor-samsung-27g500-27-ips-led-165-hz-1-ms-gtg-2560x1440/",
-	}
-
 	resChan := make(chan CheckResponse, 10)
 
 	var wg sync.WaitGroup
-	wg.Add(len(ozoneItems))
+	wg.Add(len(event.OzoneItems))
 
 	go func() {
 		defer close(resChan)
 
-		for _, url := range ozoneItems {
+		for _, url := range event.OzoneItems {
 			go func(url string) {
 				defer wg.Done()
 				resp, err := oc.Check(url)
