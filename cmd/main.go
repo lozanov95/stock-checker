@@ -54,6 +54,7 @@ func HandleRequest(ctx context.Context, event Event) {
 	mailSubject := "Product available!"
 	for resp := range resChan {
 		if !resp.Available {
+			log.Printf("%s is not available.\n", resp.URL)
 			continue
 		}
 
