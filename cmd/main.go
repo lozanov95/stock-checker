@@ -22,14 +22,17 @@ var SNS_TOPIC_ARN = os.Getenv("AWS_SNS_TOPIC_ARN")
 
 type Event struct {
 	OzoneItems []string `json:"ozoneItems"`
+	ArdesItems []string `json:"ardesItems"`
 }
 
 func HandleRequest(ctx context.Context, event Event) {
 	oc := NewOzoneChecker()
+	ac := NewArdesChecker()
 	resChan := make(chan CheckResponse, 10)
 
 	var wg sync.WaitGroup
 	wg.Add(len(event.OzoneItems))
+	wg.Add(len(event.ArdesItems))
 
 	go func() {
 		defer close(resChan)
@@ -44,6 +47,18 @@ func HandleRequest(ctx context.Context, event Event) {
 				resChan <- resp
 			}(url)
 		}
+
+		for _, url := range event.ArdesItems {
+			go func(url string) {
+				defer wg.Done()
+				resp, err := ac.Check(url)
+				if err != nil {
+					log.Fatal(err)
+				}
+				resChan <- resp
+			}(url)
+		}
+
 		wg.Wait()
 	}()
 
